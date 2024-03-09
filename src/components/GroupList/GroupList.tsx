@@ -7,7 +7,7 @@ const GroupList = ({groups} : {groups : IGroup[]}) => {
     return (
         <div className={styles.groups__list__wrapper}>
             {groups.map(group =>
-            <Group group={group}/>
+            <Group group={group} key={group.id}/>
             )}
         </div>
     );

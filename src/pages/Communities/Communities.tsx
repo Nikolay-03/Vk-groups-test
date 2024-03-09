@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import FilterGroups from "../../components/UI/FilterGroups/FilterGroups";
 import styles from './style.module.css'
 import {Filter} from "../../types/GroupsFilter";
 import {useFetching} from "../../hooks/useFetching";
@@ -7,10 +6,14 @@ import {GroupsService} from "../../Services/GroupsService";
 import {IGroup} from "../../types/Groups";
 import {Spinner} from "@vkontakte/vkui";
 import GroupList from "../../components/GroupList/GroupList";
+import FilterGroups from "../../components/FilterGroups/FilterGroups";
+import {useSortedGroups} from "../../hooks/useGroupsFilter";
 
 const Communities = () => {
     const [groups, setGroups] = useState<IGroup[]>([])
-    const [filter, setFilter] = useState<Filter>({sort: "", query: ""})
+    const [filter, setFilter] = useState<Filter>({sort:{privacy:"all", avatar:"", friends:"all"}, query: ""})
+    const sortedGroups = useSortedGroups(groups, filter.sort)
+    const [avatars, setAvatars] = useState<string[]>([]);
     const [fetchGroups, loading, error] = useFetching(async () => {
         try {
             const response = await GroupsService.GetGroupsResponse();
@@ -22,15 +25,23 @@ const Communities = () => {
             console.error(e);
         }
     });
+
     useEffect(() => {
         fetchGroups()
     }, []);
+    useEffect(() => {
+        if (groups.length > 0) {
+            const avatarsWithoutUndefined = groups.map(group => group.avatar_color).filter((avatar): avatar is string => typeof avatar === 'string');
+            const uniqueAvatars = Array.from(new Set(avatarsWithoutUndefined));
+            setAvatars(uniqueAvatars);
+        }
+    }, [groups]);
     return (
         <div className={styles.communities__wrapper}>
-            <FilterGroups filter={filter} setFilter={setFilter}/>
+            <FilterGroups filter={filter} setFilter={setFilter} avatars={avatars}/>
             {loading ?
                 <Spinner size="large" className={styles.spinner}> </Spinner>
-                : <GroupList groups={groups}/>
+                : <GroupList groups={sortedGroups}/>
             }
         </div>
     );
