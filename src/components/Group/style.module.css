@@ -1,0 +1,21 @@
+.group__wrapper{
+    width: 100%;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    height: 10vh;
+    border: 1px solid #6b6b6b;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.group__wrapper :last-child{
+    margin-bottom: 0;
+}
+.main_info{
+    display: flex;
+    width: 85%;
+    margin-inline: auto;
+    line-height: 30px;
+    flex-direction: column;
+    justify-content: center;
+}

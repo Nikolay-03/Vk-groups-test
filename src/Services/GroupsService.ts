@@ -1,14 +1,16 @@
-import * as groups from '../../groups.json'
+import {mockGroups} from "../mockGroups";
+import {GetGroupsResponse, IGroup} from "../types/Groups";
 
-export class GroupsService{
-    static async getGroups(){
-        setTimeout(() => {
-
-        })
-
-        if (response.result === 0 || !response.data){
-            throw Error('Некорректный ответ сервера')
-        }
-        return response
-}
+export class GroupsService {
+    static async GetGroupsResponse(): Promise<GetGroupsResponse> {
+        return new Promise<GetGroupsResponse>((resolve, reject) => {
+            setTimeout(() => {
+                try {
+                    resolve({ result: 1, data: mockGroups});
+                } catch (error) {
+                    reject(error);
+                }
+            }, 1000);
+        });
+    }
 }
