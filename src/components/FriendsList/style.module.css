@@ -1,0 +1,10 @@
+.friends__list__modal__wrapper{
+    width: auto;
+    display: grid;
+    grid-template-columns: 100px 100px 100px 100px 100px;
+    grid-template-rows: 0.5fr;
+    gap: 20px;
+    min-width: 600px;
+    height: auto;
+    min-height: 70px;
+}
