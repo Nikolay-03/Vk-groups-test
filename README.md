@@ -132,3 +132,9 @@ export const useSortedAndSearchedGroups = (groups :IGroup[], sort : Sort, query 
 В сам блок группы грузятся только те данные, которые существуют у группы.
 
 Стилизация приложения осуществлена с помощью css модулей для изоляции стилей
+
+## Запуск проекта
+
+`npm install`
+
+`npm start`
