@@ -11,7 +11,7 @@ import {useSortedGroups} from "../../hooks/useGroupsFilter";
 
 const Communities = () => {
     const [groups, setGroups] = useState<IGroup[]>([])
-    const [filter, setFilter] = useState<Filter>({sort:{privacy:"all", avatar:"", friends:"all"}, query: ""})
+    const [filter, setFilter] = useState<Filter>({sort:{privacy:"", avatar:"", friends:""}, query: ""})
     const sortedGroups = useSortedGroups(groups, filter.sort)
     const [avatars, setAvatars] = useState<string[]>([]);
     const [fetchGroups, loading, error] = useFetching(async () => {

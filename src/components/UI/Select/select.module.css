@@ -1,0 +1,17 @@
+.select__wrapper{
+    width: 150px;
+    height: 40px;
+    background: transparent;
+    color: white;
+    font-size: 17px;
+    outline: none;
+    border-radius: 5px;
+}
+.select__wrapper:hover {
+    border-color: #aaa;
+}
+.select__wrapper:focus {
+    background: black;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}

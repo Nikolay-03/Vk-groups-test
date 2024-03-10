@@ -5,8 +5,8 @@ export interface GroupsFilterProps{
 }
 export interface Filter{
     sort: {
-        privacy: "all" | "closed" | "open"
-        friends: "all" | "with friends" | "without friends"
+        privacy: string
+        friends: string
         avatar:string
 
     }

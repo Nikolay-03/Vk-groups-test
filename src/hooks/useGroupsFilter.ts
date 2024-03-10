@@ -1,8 +1,8 @@
 import {useMemo} from "react";
 import {IGroup} from "../types/Groups";
 interface Sort{
-    privacy: "all" | "closed" | "open"
-    friends: "all" | "with friends" | "without friends"
+    privacy: string
+    friends: string
     avatar:string
 }
 export const useSortedGroups = (groups : IGroup[], sort : Sort) => {
