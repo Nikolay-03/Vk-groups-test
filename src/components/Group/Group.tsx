@@ -20,7 +20,7 @@ const Group = ({group}: { group: IGroup }) => {
                 <div style={{fontSize: 17, fontWeight: 600}}>{group.name}</div>
                 <div className={styles.types__group}>
                     {group.closed ? <span>Тип приватности: закрытая</span> : <span>Тип приватности: открытая</span>}
-                    {group.members_count && <span>Подписчики: {group.members_count}</span>}
+                    {group.members_count.toString() && <span>Подписчики: {group.members_count}</span>}
                     {group.friends &&
                         <span onClick={() => setFriendsModal(true)} style={{cursor:'pointer'}}>Подписано друзей: {group.friends.length}</span>}
                     {group.friends && (

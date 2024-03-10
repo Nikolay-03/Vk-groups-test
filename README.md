@@ -1,46 +1,134 @@
-# Getting Started with Create React App
+## Профильное задание - Frontend-разработчик в команду сообществ
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Создайте простое react приложение, состоящее из одной страницы, которое при открытии будет запрашивать список групп с backend (замокайте ответ метода данными из файла `groups.json`).
 
-## Available Scripts
+Типизация ответа метода получения групп `GetGroupsResponse`:
+```tsx
+interface GetGroupsResponse {
+  result: 1 | 0,
+  data?: Group[]
+}
 
-In the project directory, you can run:
+interface Group {
+  "id": number,
+  "name": string,
+  "closed": boolean,
+  "avatar_color"?: string,
+  "members_count": number,
+  "friends"?: User[]
+}
 
-### `npm start`
+interface User {
+  "first_name": string,
+  "last_name": string
+}
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- Группа может быть закрытой или открытой.
+- Группа может иметь аватарку в виде круга диаметром 100px с заливкой цветом, указанным в атрибуте avatar_color.
+- Группа может содержать список ваших друзей, состоящих в ней.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+После получения списка всех групп отобразите список на странице в произвольном виде. Отобразите в интерфейсе имя группы, аватарку, тип приватности (закрытая / открытая), кол-во подписчиков и кол-во друзей. При клике на кол-во друзей в блоке группы должен появиться блок с именем и фамилией каждого из друзей.
 
-### `npm test`
+Если данных для отображения какого-то поля нет, его рисовать не нужно.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Над списком групп должен быть набор фильтров, позволяющий выбрать только нужные нам группы.
 
-### `npm run build`
+Мы должны иметь возможность отфильтровать группы по типу приватности (все / закрытая / открытая), по цвету аватарки (любой / все возможные значения из атрибута avatar_color), наличию друзей в группе
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+##### Учтите, что backend обрабатывает все запросы с задержкой в 1 секунду. Реализуйте эту задержку самостоятельно.
+##### Метод так же может упасть в ошибку или вернуть `result: 0` или не вернуть поле `data`, что равносильно ошибке. Просто учтите это в коде.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## Реализация 
+Создал приложение с помощью CRA по шаблону `typescript`.
+Приложение состоит из одной страницы `Communities`.
+Запросы осуществляются с помощью кастомного хука `useFetching` и метода `GetGroupsResponse`:
+```ts
+export const useFetching = <T>(callback: () => Promise<T>): [() => void, boolean, string] => {
+    const [isLoading,setIsLoading] = useState<boolean>(false)
+    const [error,setError] = useState<string>('')
+    const fetching = async () => {
+        try {
+            setIsLoading(true)
+            await callback()
+        }
+        catch (e: any){
+            setError(e.message)
+        }
+        finally {
+            setIsLoading(false)
+        }
+    }
+    return [fetching, isLoading, error]
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+export class GroupsService {
+    static async GetGroupsResponse(): Promise<GetGroupsResponse> {
+        return new Promise<GetGroupsResponse>((resolve, reject) => {
+            setTimeout(() => {
+                try {
+                    resolve({ result: 1, data: mockGroups});
+                } catch (error) {
+                    reject(error);
+                }
+            }, 1000);
+        });
+    }
+}
+```
+Мок ответ backend  находится в файле `mockGroups.ts`.
 
-### `npm run eject`
+В случае негативного ответа сервера в приложении выводится надпись: "Некорректный ответ сервера".
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Все приложение также обернуто типизацией, основные типы находятся в папке `types`.
+Фильтрация групп осуществляется по трем фильтрам: 
+- Приватность. Тут мы можем выбрать Все/Открытая/Закрытая.
+- Подписчики. Тут мы можем выбрать Все/Есть друзья/Нет друзей.
+- Аватарки. Тут мы выбираем цвет аватарки Все/1 цвет из всех возможных цветов атрибута `avatar_color`.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Также можно найти группу по названию из строки поиска.
+Если группы не найдены, то пишется: "Группы не найдены"
+Вся фильтрация осуществляется с помощью кастомного хука `useGroupsFilter`:
+```ts
+interface Sort{
+    privacy: string
+    friends: string
+    avatar:string
+}
+export const useSortedGroups = (groups : IGroup[], sort : Sort) => {
+    const sortedGroups = useMemo(()=>{
+        let result = [...groups]
+        if (sort.privacy === 'closed'){
+            result = result.filter((group) => group.closed)
+        }
+        if (sort.privacy === 'open'){
+            result = result.filter((group) => !group.closed)
+        }
+        if (sort.friends === 'with friends'){
+            result = result.filter((group) => group.friends)
+        }
+        if (sort.friends === 'without friends'){
+            result = result.filter((group) => !group.friends)
+        }
+        if(sort.avatar && sort.avatar !== 'all'){
+            result = result.filter((group) => group.avatar_color === sort.avatar)
+        }
+        return result
+    },[groups, sort])
+    return sortedGroups
+}
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+export const useSortedAndSearchedGroups = (groups :IGroup[], sort : Sort, query : string) => {
+    const sortedGroups = useSortedGroups(groups,sort)
+    const sortedAndSearchedGroups = useMemo(() => {
+        return sortedGroups.filter(group => group.name.toLowerCase().includes(query.toLowerCase()))
+    },[sortedGroups, query, groups])
+    return sortedAndSearchedGroups
+}
+```
+Данный хук оптимизирован с помощью хука `useMemo` для кэширования отсортированных групп.
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+При нажатии на "Подписано друзей" в блоке группы всплывает модальное окно в котором отображены все друзья, подписанные на эту группу.
+В сам блок группы грузятся только те данные, которые существуют у группы.
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+Стилизация приложения осуществлена с помощью css модулей для изоляции стилей

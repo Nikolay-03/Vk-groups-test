@@ -17,29 +17,6 @@ export const mockGroups = [
             {
                 "first_name": "Вера",
                 "last_name": "Петрова"
-            },
-            {
-                "first_name": "Маша",
-                "last_name": "Петрова"
-            },
-            {
-                "first_name": "Фёдор",
-                "last_name": "Агапов"
-            },
-            {
-                "first_name": "Вера",
-                "last_name": "Петрова"
-            },{
-                "first_name": "Маша",
-                "last_name": "Петрова"
-            },
-            {
-                "first_name": "Фёдор",
-                "last_name": "Агапов"
-            },
-            {
-                "first_name": "Вера",
-                "last_name": "Петрова"
             }
         ]
     },
