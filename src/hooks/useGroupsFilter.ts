@@ -27,3 +27,11 @@ export const useSortedGroups = (groups : IGroup[], sort : Sort) => {
     },[groups, sort])
     return sortedGroups
 }
+
+export const useSortedAndSearchedGroups = (groups :IGroup[], sort : Sort, query : string) => {
+    const sortedGroups = useSortedGroups(groups,sort)
+    const sortedAndSearchedGroups = useMemo(() => {
+        return sortedGroups.filter(group => group.name.toLowerCase().includes(query.toLowerCase()))
+    },[sortedGroups, query, groups])
+    return sortedAndSearchedGroups
+}

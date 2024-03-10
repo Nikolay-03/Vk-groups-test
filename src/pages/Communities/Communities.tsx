@@ -7,12 +7,12 @@ import {IGroup} from "../../types/Groups";
 import {Spinner} from "@vkontakte/vkui";
 import GroupList from "../../components/GroupList/GroupList";
 import FilterGroups from "../../components/FilterGroups/FilterGroups";
-import {useSortedGroups} from "../../hooks/useGroupsFilter";
+import {useSortedAndSearchedGroups} from "../../hooks/useGroupsFilter";
 
 const Communities = () => {
     const [groups, setGroups] = useState<IGroup[]>([])
     const [filter, setFilter] = useState<Filter>({sort:{privacy:"", avatar:"", friends:""}, query: ""})
-    const sortedGroups = useSortedGroups(groups, filter.sort)
+    const sortedAndSearchedGroups = useSortedAndSearchedGroups(groups,filter.sort,filter.query)
     const [avatars, setAvatars] = useState<string[]>([]);
     const [fetchGroups, loading, error] = useFetching(async () => {
         try {
@@ -21,8 +21,8 @@ const Communities = () => {
                 throw new Error('Некорректный ответ сервера');
             }
             setGroups(response.data);
-        } catch (e) {
-            console.error(e);
+        } catch (e : any) {
+            throw new Error(e.message);
         }
     });
 
@@ -39,9 +39,18 @@ const Communities = () => {
     return (
         <div className={styles.communities__wrapper}>
             <FilterGroups filter={filter} setFilter={setFilter} avatars={avatars}/>
+            {error &&
+                <h1 style={{
+                fontSize: 40,
+                color: 'white',
+                display: 'flex',
+                justifyContent: 'center',
+                fontWeight: 600
+            }}>{error}</h1>
+            }
             {loading ?
                 <Spinner size="large" className={styles.spinner}> </Spinner>
-                : <GroupList groups={sortedGroups}/>
+                : <GroupList groups={sortedAndSearchedGroups}/>
             }
         </div>
     );
